@@ -21,6 +21,7 @@ exports.up = function (knex, Promise) {
 
       table.text('params')
       table.text('timestamp')
+      table.integer('interval')
 
       table.integer('day_of_week')
       table.integer('day_of_month')
