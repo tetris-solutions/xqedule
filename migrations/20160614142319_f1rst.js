@@ -4,7 +4,7 @@ exports.up = function (knex, Promise) {
       table.string('id', 40).primary()
       table.string('name', 100).notNullable()
       table.text('command').notNullable()
-
+      table.text('params')
       table.text('creation').notNullable()
     })
     .createTable('schedule', function (table) {
