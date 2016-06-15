@@ -1,0 +1,15 @@
+{
+  "extends": [
+    "standard"
+  ],
+  "globals": {
+    "fetch": true
+  },
+  "rules": {
+    "valid-jsdoc": 2,
+    "no-console": 2,
+    "no-debugger": 2,
+    "prefer-const": 2,
+    "arrow-parens": 0
+  }
+}

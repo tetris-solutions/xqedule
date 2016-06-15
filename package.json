@@ -1,0 +1,63 @@
+{
+  "name": "@tetris/xqedule",
+  "version": "0.0.0",
+  "description": "a task scheduler",
+  "scripts": {
+    "start": "bin/cmd.js",
+    "knex": "knex",
+    "build": "buble --target chrome:50,node:4 -i src -o lib",
+    "prepublish": "rimraf lib && npm run build",
+    "lint": "eslint src bin migrations",
+    "watch": "watchify src/client.js -v -d -o public/js/client.js"
+  },
+  "engines": {
+    "npm": ">=3.0.0",
+    "node": ">=4.0.0"
+  },
+  "pre-commit": [
+    "lint"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tetris-solutions/xqedule.git"
+  },
+  "keywords": [
+    "task",
+    "cron"
+  ],
+  "files": [
+    "bin",
+    "lib",
+    "migrations",
+    "knexfile.js"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tetris-solutions/xqedule/issues"
+  },
+  "homepage": "https://github.com/tetris-solutions/xqedule#readme",
+  "dependencies": {
+    "dotenv": "^2.0.0",
+    "knex": "^0.11.5",
+    "lodash": "^4.13.1",
+    "moment": "^2.13.0",
+    "mustache": "^2.2.1",
+    "page": "^1.7.1",
+    "pidusage": "^1.0.1",
+    "restify": "^4.1.0",
+    "shortid": "^2.2.6",
+    "sqlite3": "^3.1.4",
+    "yo-yo": "^1.2.1"
+  },
+  "devDependencies": {
+    "buble": "^0.10.7",
+    "eslint": "^2.12.0",
+    "eslint-config-standard": "^5.3.1",
+    "eslint-plugin-promise": "^1.3.2",
+    "eslint-plugin-standard": "^1.3.2",
+    "pre-commit": "^1.1.3",
+    "rimraf": "^2.5.2",
+    "uglifyjs": "^2.4.10",
+    "watchify": "^3.7.0"
+  }
+}

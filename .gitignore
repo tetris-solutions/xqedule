@@ -1,0 +1,7 @@
+.idea
+node_modules
+*.log
+xqedule.sqlite
+.env
+lib
+/public/js/client.js
