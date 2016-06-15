@@ -1,5 +1,7 @@
 const yo = require('yo-yo')
 const moment = require('moment')
+const page = require('page')
+const deleteSchedule = require('../actions/delete-schedule')
 
 function editSchedule ({params: {scheduleId}, store, state}) {
   if (state.isLoading) {
@@ -21,6 +23,11 @@ function editSchedule ({params: {scheduleId}, store, state}) {
     throw new Error(`Schedule ${scheduleId} was not found`)
   }
 
+  function onRemoveClick () {
+    deleteSchedule(scheduleId)
+      .then(() => page('/'))
+  }
+
   return yo`
     <div>
         <header>
@@ -31,7 +38,7 @@ function editSchedule ({params: {scheduleId}, store, state}) {
         <main>
             <del>This is already a bit problematic for me</del>
             <br>
-            <a href='/'>Go back to list</a>
+            <a href='/'>cancel</a> <button onclick=${onRemoveClick}>remove</button>
         </main>
     </div>`
 }

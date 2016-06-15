@@ -29,7 +29,7 @@ const update = newElem => {
 }
 
 const errorComponent = require('./components/error')
-const serializeError = err => pick(err, 'stack', 'message', 'code', 'statusCode')
+const serializeError = err => pick(err, 'stack', 'message', 'code', 'status', 'statusCode')
 
 function onError (context, err) {
   context.state.error = err
@@ -78,7 +78,7 @@ const asyncComponent = curry((component, context) => {
         return r
       })
       .catch(r => {
-        onError(assign(serializeError(r), serializeError(r.data)))
+        onError(context, assign(serializeError(r), serializeError(r.data)))
       })
   }
 

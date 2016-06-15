@@ -8,7 +8,9 @@
     "build": "buble --target chrome:50,node:4 -i src -o lib",
     "prepublish": "rimraf lib && npm run build",
     "lint": "eslint src bin migrations",
-    "watch": "watchify src/client.js -v -d -o public/js/client.js"
+    "watch": "watchify src/client.js -v -d -o public/js/client.js",
+    "migrate": "knex migrate:latest",
+    "seed": "knex seed:run"
   },
   "engines": {
     "npm": ">=3.0.0",

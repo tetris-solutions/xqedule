@@ -59,4 +59,12 @@ server.post('/api/schedule', function (req, res, next) {
     .catch(err => next(new restify.ConflictError(err.message)))
 })
 
+server.del('/api/schedule/:id', function (req, res, next) {
+  db('schedule')
+    .where('id', req.params.id)
+    .del()
+    .then(() => res.send(204, ''))
+    .catch(err => next(new restify.ConflictError(err.message)))
+})
+
 server.listen(10171)

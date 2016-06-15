@@ -10,6 +10,7 @@ exports.up = function (knex, Promise) {
     .createTable('schedule', function (table) {
       table.string('id', 20).primary()
       table.string('company', 40)
+      table.string('timezone', 100)
 
       table.string('task', 40)
         .references('id')
@@ -32,7 +33,6 @@ exports.up = function (knex, Promise) {
     })
     .createTable('process', function (table) {
       table.string('id', 20).primary()
-
       table.text('command').notNullable()
 
       table.string('schedule', 20)
