@@ -7,14 +7,14 @@ require('dotenv').config({
 const developmentMode = process.env.NODE_ENV === 'development'
 const spawn = require('child_process').spawn
 const resolve = require('path').resolve
-const serverScript = resolve(
+const daemonScript = resolve(
   __dirname,
   '..',
   developmentMode ? 'src' : 'lib',
-  'server.js'
+  'daemon.js'
 )
 
-spawn('node', [serverScript, '--expose-gc'], {
+spawn('node', ['--expose-gc', daemonScript], {
   cwd: resolve(__dirname, '..'),
   env: process.env,
   stdio: 'inherit'

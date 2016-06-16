@@ -9,7 +9,6 @@ exports.up = function (knex, Promise) {
     })
     .createTable('schedule', function (table) {
       table.string('id', 20).primary()
-      table.string('company', 40)
       table.string('timezone', 100)
 
       table.string('task', 40)
@@ -51,7 +50,7 @@ exports.up = function (knex, Promise) {
       table.integer('exit_code')
 
       table.text('creation').notNullable()
-      table.text('end').notNullable()
+      table.text('end')
     })
 }
 

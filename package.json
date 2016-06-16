@@ -43,12 +43,14 @@
     "knex": "^0.11.5",
     "lodash": "^4.13.1",
     "moment": "^2.13.0",
+    "moment-timezone": "^0.5.4",
     "mustache": "^2.2.1",
     "page": "^1.7.1",
     "pidusage": "^1.0.1",
     "restify": "^4.1.0",
     "shortid": "^2.2.6",
     "sqlite3": "^3.1.4",
+    "winston": "^2.2.0",
     "yo-yo": "^1.2.1"
   },
   "devDependencies": {

@@ -54,7 +54,7 @@ function dynamicTime (state, onChange) {
         <select name='${name}' onchange=${onChange}>
             <option value=''>*</option>
             ${map(ls, val => yo`
-                <option ${val === state[name] ? 'selected' : ''} value='${val}'>
+                <option ${Number(val) === Number(state[name]) ? 'selected' : ''} value='${val}'>
                   ${padStart(val, 2, '0')}
                 </option>`)}
         </select>
@@ -78,7 +78,7 @@ function dynamicTime (state, onChange) {
           <select name='day_of_month' onchange=${onChange}>
               <option value=''>*</option>
               ${map(daysOfMonth, day => yo`
-                  <option ${day === state.day_of_month ? 'selected' : ''} value='${day}'>
+                  <option ${Number(day) === Number(state.day_of_month) ? 'selected' : ''} value='${day}'>
                     ${padStart(day, 2, '0')}
                   </option>`)}
           </select>
@@ -89,7 +89,7 @@ function dynamicTime (state, onChange) {
           <select name='day_of_week' onchange=${onChange}>
               <option value=''>*</option>
               ${map(daysOfWeek, day => yo`
-                  <option ${day === state.day_of_week ? 'selected' : ''} value='${day}'>
+                  <option ${Number(day) === Number(state.day_of_week) ? 'selected' : ''} value='${day}'>
                     ${moment().day(day).format('dddd')}
                   </option>`)}
           </select>
@@ -100,7 +100,7 @@ function dynamicTime (state, onChange) {
           <select name='month' onchange=${onChange}>
               <option value=''>*</option>
               ${map(months, month => yo`
-                  <option ${month === state.month ? 'selected' : ''} value='${month}'>
+                  <option ${Number(month) === Number(state.month) ? 'selected' : ''} value='${month}'>
                     ${moment().month(month - 1).format('MMMM')}
                   </option>`)}
           </select>
@@ -197,8 +197,9 @@ function intervalInput (state, onChange) {
     <label>Every </label>
     <input type='number' name='interval.value' onchange=${onChange} value='${toNum(state['interval.value'])}' required />
     <select name='interval.multiplier' onchange=${onChange} required>
+        <option value=''>-- select --</option>
         ${map(intervalUnits, (value, name) => yo`
-          <option value=${value} ${state['interval.multiplier'] === value ? 'selected' : ''}>
+          <option value=${value} ${Number(state['interval.multiplier']) === Number(value) ? 'selected' : ''}>
             ${capitalize(name)}
           </option>
         `)}

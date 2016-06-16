@@ -1,9 +1,8 @@
 const assign = require('lodash/assign')
 const shortid = require('shortid')
 const restify = require('restify')
-const configs = require('../knexfile')
-const env = process.env.NODE_ENV || 'development'
-const db = require('knex')(configs[env])
+const emitter = require('./emitter')
+const db = require('./db')
 const server = restify.createServer()
 const map = require('lodash/map')
 
@@ -11,7 +10,7 @@ server.use(restify.CORS())
 server.use(restify.queryParser())
 server.use(restify.bodyParser())
 
-const parseParams = s => {
+const addParsedParams = s => {
   try {
     return assign({}, s, {params: JSON.parse(s.params)})
   } catch (e) {
@@ -20,28 +19,28 @@ const parseParams = s => {
 }
 
 server.get('/api/tasks', function (req, res, next) {
-  db.select('*')
+  return db.select('*')
     .from('task')
-    .then(tasks => res.json(map(tasks, parseParams)))
+    .then(tasks => res.json(map(tasks, addParsedParams)))
     .catch(err => next(new restify.InternalServerError(err.message)))
 })
 
 server.get('/api/schedules', function (req, res, next) {
-  db.select('*')
+  return db.select('*')
     .from('schedule')
-    .then(schedules => res.json(map(schedules, parseParams)))
+    .then(schedules => res.json(map(schedules, addParsedParams)))
     .catch(err => next(new restify.InternalServerError(err.message)))
 })
 
 server.get('/api/schedule/:id', function (req, res, next) {
-  db.first('*')
+  return db.first('*')
     .from('schedule')
     .where('id', req.params.id)
     .then(schedule => {
       if (!schedule) {
         return next(new restify.NotFoundError('Schedule not found'))
       }
-      res.json(parseParams(schedule))
+      res.json(addParsedParams(schedule))
     })
     .catch(err => next(new restify.InternalServerError(err.message)))
 })
@@ -53,17 +52,25 @@ server.post('/api/schedule', function (req, res, next) {
     creation: (new Date()).toISOString()
   })
 
-  db.insert(schedule)
+  return db.insert(schedule)
     .into('schedule')
-    .then(() => res.json(201, {id: schedule.id}))
+    .then(() => {
+      emitter.emit('schedule::insert', schedule)
+
+      res.json(201, {id: schedule.id})
+    })
     .catch(err => next(new restify.ConflictError(err.message)))
 })
 
 server.del('/api/schedule/:id', function (req, res, next) {
-  db('schedule')
+  return db('schedule')
     .where('id', req.params.id)
     .del()
-    .then(() => res.send(204, ''))
+    .then(() => {
+      emitter.emit('schedule::delete', req.params.id)
+
+      res.send(204, '')
+    })
     .catch(err => next(new restify.ConflictError(err.message)))
 })
 
