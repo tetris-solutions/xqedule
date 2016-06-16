@@ -134,8 +134,13 @@ function searchSchedules () {
 function intervalHasExpired (schedule) {
   const lastMoment = moment(schedule.lastExecution)
   const elapsed = moment().diff(lastMoment, 'seconds')
+  const timeIsUp = elapsed >= schedule.interval
 
-  return elapsed >= schedule.interval
+  if (process.env.NODE_ENV === 'development' && !timeIsUp) {
+    logger.debug(`${schedule.task.name}: too soon; ${schedule.interval - elapsed} seconds to go`)
+  }
+
+  return timeIsUp
 }
 
 function tick () {
