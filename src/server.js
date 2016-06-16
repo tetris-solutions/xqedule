@@ -6,6 +6,16 @@ const db = require('./db')
 const server = restify.createServer()
 const map = require('lodash/map')
 
+const toJSON = str => {
+  if (!str) return null
+
+  try {
+    return JSON.parse(str)
+  } catch (e) {
+    return null
+  }
+}
+
 server.use(restify.CORS())
 server.use(restify.queryParser())
 server.use(restify.bodyParser())
@@ -40,7 +50,21 @@ server.get('/api/schedule/:id', function (req, res, next) {
       if (!schedule) {
         return next(new restify.NotFoundError('Schedule not found'))
       }
-      res.json(addParsedParams(schedule))
+
+      return db.select()
+        .from('process')
+        .where('schedule', schedule.id)
+        .orderBy('id', 'desc')
+        .limit(20)
+        .then(ps => {
+          schedule.processes = map(ps, p => {
+            p.cpu_usage = toJSON(p.cpu_usage) || []
+            p.memory_usage = toJSON(p.memory_usage) || []
+            return p
+          })
+
+          res.json(addParsedParams(schedule))
+        })
     })
     .catch(err => next(new restify.InternalServerError(err.message)))
 })
@@ -51,6 +75,8 @@ server.post('/api/schedule', function (req, res, next) {
     params: req.body.params ? JSON.stringify(req.body.params) : null,
     creation: (new Date()).toISOString()
   })
+
+  // @todo: validate params
 
   return db.insert(schedule)
     .into('schedule')

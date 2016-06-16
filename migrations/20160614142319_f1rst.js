@@ -34,6 +34,7 @@ exports.up = function (knex, Promise) {
     .createTable('process', function (table) {
       table.string('id', 20).primary()
       table.text('command').notNullable()
+      table.integer('pid').notNullable()
 
       table.string('schedule', 20)
         .references('id')

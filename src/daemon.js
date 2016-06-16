@@ -1,11 +1,9 @@
 const emitter = require('./emitter')
 const db = require('./db')
 const logger = require('./logger')
-// const pid = require('pidusage')
-// const spawn = require('child_process').spawn
+const run = require('./run')
 const moment = require('moment-timezone')
 const filter = require('lodash/filter')
-const mustache = require('mustache')
 const map = require('lodash/fp/map')
 const omit = require('lodash/omit')
 const assign = require('lodash/assign')
@@ -131,16 +129,6 @@ function searchSchedules () {
     .catch(err => {
       logger.crit('Failed to update schedules', assign({}, err, pick(err, 'message', 'stack', 'code')))
     })
-}
-
-function run (schedule) {
-  const command = mustache.render(schedule.task.command, schedule.params)
-
-  logger.debug(`will run ${schedule.task.name}: ${command}`, schedule)
-
-  // @todo: spanw and save process, start monitoring, etc
-
-  schedule.lastExecution = new Date().toISOString()
 }
 
 function intervalHasExpired (schedule) {
