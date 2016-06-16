@@ -132,7 +132,10 @@ function searchSchedules () {
 }
 
 function intervalHasExpired (schedule) {
-  return moment().diff(moment(schedule.lastExecution), 'seconds') >= schedule.interval
+  const lastMoment = moment(schedule.lastExecution)
+  const elapsed = moment().diff(lastMoment, 'seconds')
+
+  return elapsed >= schedule.interval
 }
 
 function tick () {

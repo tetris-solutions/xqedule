@@ -97,7 +97,7 @@ function run (schedule) {
       const command = mustache.render(schedule.task.command, schedule.params)
 
       const parts = command.split(' ')
-      const id = moment.utc().format('YYYYMMDDHHmmss')
+      const id = moment.utc().format('YYYYMMDDHHmmssSSSS')
       const logFileName = `${id}-${schedule.task.id}-${schedule.id}.log`
       const logPath = path.resolve(rootPath, 'logs', logFileName)
       const logWriteStream = fs.createWriteStream(logPath)
