@@ -28,14 +28,15 @@ function monitor (childProcess, process) {
   process.cpu_usage = []
   process.memory_usage = []
 
+  let lock
+  let interval
+
   const persistStat = () => db('process')
     .where('id', process.id)
     .update({
       cpu_usage: JSON.stringify(process.cpu_usage),
       memory_usage: JSON.stringify(process.memory_usage)
     }).then()
-
-  let lock
 
   function getStat () {
     if (lock) return
@@ -63,14 +64,7 @@ function monitor (childProcess, process) {
     global.gc()
   }
 
-  const interval = setInterval(getStat, REFRESH_STAT_INTERVAL)
-  getStat()
-
-  if (childProcess.connected) {
-    delete running[process.schedule]
-  }
-
-  childProcess.on('exit', code => {
+  function onExit (code = null) {
     delete running[process.schedule]
     usage.unmonitor(childProcess.pid)
 
@@ -83,7 +77,17 @@ function monitor (childProcess, process) {
       exit_code: process.exit_code,
       end: process.end
     }).then()
-  })
+  }
+
+  if (childProcess.connected) {
+    interval = setInterval(getStat, REFRESH_STAT_INTERVAL)
+    getStat()
+  } else {
+    persistStat()
+    onExit()
+  }
+
+  childProcess.on('exit', onExit)
 }
 
 function run (schedule) {

@@ -117,6 +117,7 @@ server.post('/api/task', function (req, res, next) {
   return db.insert(task)
     .into('task')
     .then(() => {
+      emitter.emit('task::insert', task)
       res.json(201, {id: task.id})
     })
     .catch(err => next(new restify.ConflictError(err.message)))
