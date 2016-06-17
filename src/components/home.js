@@ -35,9 +35,11 @@ function taskDisplay (task, onClickDelete) {
                 ${map(task.schedules, taskRow)}
             </tbody>
         </table>
-        <hr>
+        <br>
         <button onclick=${onClickDelete.bind(null, task.id)}>remove</button>
         <a href='/create/schedule/${task.id}'>Add schedule</a>
+        <br>
+        <br>
     </section>
   </details>
   `
