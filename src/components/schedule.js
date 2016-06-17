@@ -5,6 +5,7 @@ const deleteSchedule = require('../actions/delete-schedule')
 const mean = require('lodash/mean')
 const bytes = require('pretty-bytes')
 const scheduleTime = require('./schedule-time')
+const command = require('../compiled-command')
 
 function processRow ({pid, creation, end, log_file, memory_usage, cpu_usage, command}) {
   return yo`
@@ -74,6 +75,7 @@ function viewSchedule ({params, store, state}) {
             </h1>
         </header>
         <main>
+            <pre>$ ${command(schedule.task, schedule)}</pre>
             ${processTable(schedule.processes)}
             <br>
             <a href='/'>cancel</a> <button onclick=${onRemoveClick}>remove</button>

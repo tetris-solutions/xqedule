@@ -1,3 +1,4 @@
+'use strict'
 const assign = require('lodash/assign')
 const xhr = require('xhr')
 

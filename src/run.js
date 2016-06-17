@@ -6,10 +6,10 @@ const logger = require('./logger')
 const usage = require('pidusage')
 const spawn = require('child_process').spawn
 const fs = require('fs')
-const mustache = require('mustache')
 const assign = require('lodash/assign')
 const pick = require('lodash/pick')
 const round = require('lodash/round')
+const compiledCommand = require('./compiled-command')
 
 const running = {}
 
@@ -99,7 +99,7 @@ function run (schedule) {
 
   return Promise.resolve()
     .then(() => {
-      const command = mustache.render(schedule.task.command, schedule.params)
+      const command = compiledCommand(schedule.task, schedule)
 
       const parts = command.split(' ')
       const id = moment.utc().format('YYYYMMDDHHmmssSSSS')

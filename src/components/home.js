@@ -7,16 +7,18 @@ const moment = require('moment')
 const deleteTask = require('../actions/delete-task')
 const filter = require('lodash/filter')
 const assign = require('lodash/assign')
-
-function taskRow (schedule) {
-  return yo`
-    <tr>
-        <td><a href='/schedule/${schedule.id}'>${scheduleTime(schedule)}</a></td>
-        <td>${moment(schedule.creation).fromNow()}</td>
-    </tr>`
-}
+const command = require('../compiled-command')
 
 function taskDisplay (task, onClickDelete) {
+  function taskRow (schedule) {
+    return yo`
+    <tr>
+        <td><a href='/schedule/${schedule.id}'>${scheduleTime(schedule)}</a></td>
+        <td>${command(task, schedule)}</td>
+        <td>${moment(schedule.creation).fromNow()}</td>
+    </tr>`
+  }
+
   return yo`
   <details>
     <summary>
@@ -28,6 +30,7 @@ function taskDisplay (task, onClickDelete) {
             <thead>
                 <tr>
                     <th>Schedule</th>
+                    <th>Command</th>
                     <th>Creation</th>
                 </tr>
             </thead>
