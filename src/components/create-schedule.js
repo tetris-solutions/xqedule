@@ -239,7 +239,7 @@ function createSchedule ({store: {task}, state, save}) {
   return yo`
     <div>
       <header>
-        <h1>Create new schedule</h1>
+        <h1>Create schedule</h1>
       </header>
       <main>
         <form onsubmit=${onSubmitSchedule}>
