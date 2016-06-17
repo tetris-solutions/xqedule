@@ -1,3 +1,4 @@
+'use strict'
 const emitter = require('./emitter')
 const db = require('./db')
 const logger = require('./logger')

@@ -1,3 +1,4 @@
+'use strict'
 const moment = require('moment')
 const path = require('path')
 const db = require('./db')
