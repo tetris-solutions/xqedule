@@ -4,6 +4,7 @@ const page = require('page')
 const deleteSchedule = require('../actions/delete-schedule')
 const mean = require('lodash/mean')
 const bytes = require('pretty-bytes')
+const scheduleTime = require('./schedule-time')
 
 function processRow ({pid, creation, end, log_file, memory_usage, cpu_usage, command}) {
   return yo`
@@ -68,7 +69,7 @@ function viewSchedule ({params: {scheduleId}, store, state}) {
     <div>
         <header>
             <h1>
-                ${schedule.task} <small>${moment(schedule.timestamp).fromNow()}</small>
+                ${schedule.task} <small>${scheduleTime(schedule)}</small>
             </h1>
         </header>
         <main>

@@ -1,10 +1,11 @@
 const yo = require('yo-yo')
 const loading = require('./loading')
+const scheduleTime = require('./schedule-time')
 
-function scheduleLink ({id, task, timestamp}) {
+function scheduleLink (schedule) {
   return yo`
     <li>
-      <a href='/schedule/${id}'>${task}: ${timestamp}</a>
+      <a href='/schedule/${schedule.id}'>${schedule.task}: ${scheduleTime(schedule)}</a>
     </li>`
 }
 

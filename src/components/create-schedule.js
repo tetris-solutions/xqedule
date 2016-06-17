@@ -244,7 +244,7 @@ function createSchedule ({store, state, save}) {
         <h1>Create new schedule</h1>
       </header>
       <main>
-        <form autocomplete='off' onsubmit=${onSubmitSchedule}>
+        <form onsubmit=${onSubmitSchedule}>
           <p>
             <label>Task</label>
             

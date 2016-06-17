@@ -38,6 +38,7 @@ server.get('/api/tasks', function (req, res, next) {
 server.get('/api/schedules', function (req, res, next) {
   return db.select('*')
     .from('schedule')
+    .orderBy('creation', 'desc')
     .then(schedules => res.json(map(schedules, addParsedParams)))
     .catch(err => next(new restify.InternalServerError(err.message)))
 })
