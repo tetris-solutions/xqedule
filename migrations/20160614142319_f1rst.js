@@ -27,7 +27,6 @@ exports.up = function (knex, Promise) {
       table.integer('month')
       table.integer('hour')
       table.integer('minute')
-      table.integer('second')
 
       table.text('creation').notNullable()
     })

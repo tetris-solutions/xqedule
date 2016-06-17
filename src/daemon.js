@@ -4,12 +4,14 @@ const logger = require('./logger')
 const run = require('./run')
 const moment = require('moment-timezone')
 const filter = require('lodash/filter')
-const map = require('lodash/fp/map')
+const mapFp = require('lodash/fp/map')
 const omit = require('lodash/omit')
 const assign = require('lodash/assign')
 const curry = require('lodash/curry')
 const compose = require('lodash/fp/compose')
 const pick = require('lodash/pick')
+const flatten = require('lodash/flatten')
+const map = require('lodash/map')
 
 const schedules = {
   dynamic: {
@@ -70,7 +72,8 @@ const organize = curry((newSchedules, schedule) => {
   } else if (schedule.timestamp) {
     newSchedules.timestamp.push(schedule)
   } else if (schedule.timezone) {
-    newSchedules[schedule.timezone] = schedule
+    newSchedules.dynamic[schedule.timezone] = newSchedules.dynamic[schedule.timezone] || []
+    newSchedules.dynamic[schedule.timezone].push(schedule)
   }
 
   return schedule
@@ -110,7 +113,7 @@ function searchSchedules () {
   }
 
   const parse = compose(saveLastExecution, parseSchedule)
-  const hydrate = ls => Promise.all(map(parse, ls))
+  const hydrate = ls => Promise.all(mapFp(parse, ls))
 
   return db.select(
     'schedule.*',
@@ -121,7 +124,7 @@ function searchSchedules () {
     .from('schedule')
     .join('task', 'task.id', 'schedule.task')
     .then(hydrate)
-    .then(map(organize(newSchedules)))
+    .then(mapFp(organize(newSchedules)))
     .then(schedules => {
       logger.info(`found ${schedules.length} schedules`)
     })
@@ -143,10 +146,46 @@ function intervalHasExpired (schedule) {
   return timeIsUp
 }
 
+function hasReachedTimestamp (schedule) {
+  return schedule.lastExecution === t0 && Date.now() >= new Date(schedule.timestamp).getTime()
+}
+
+function getMatchingSchedules (schedules, timezone) {
+  const now = moment.tz(timezone)
+
+  const matchesCurrentTime = ({
+    day_of_week,
+    day_of_month,
+    month,
+    hour,
+    minute
+  }) => (
+    (day_of_week === null || now.day() + 1 === day_of_week) &&
+    (day_of_month === null || now.date() === day_of_month) &&
+    (month === null || now.month() + 1 === month) &&
+    (hour === null || now.hour() === hour) &&
+    (minute === null || now.minute() === minute)
+  )
+
+  const minuteFmt = 'YYYY-MM-DD HH:mm'
+
+  const didNotRunYet = ({lastExecution}) => moment(lastExecution)
+    .tz(timezone)
+    .format(minuteFmt) !== now.format(minuteFmt)
+
+  return filter(schedules, schedule => matchesCurrentTime(schedule) && didNotRunYet(schedule))
+}
+
 function tick () {
   global.gc()
 
   filter(schedules.interval, intervalHasExpired)
+    .forEach(run)
+
+  filter(schedules.timestamp, hasReachedTimestamp)
+    .forEach(run)
+
+  flatten(map(schedules.dynamic, getMatchingSchedules))
     .forEach(run)
 }
 

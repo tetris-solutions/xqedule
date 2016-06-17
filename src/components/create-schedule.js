@@ -38,7 +38,6 @@ const daysOfMonth = range(1, 32)
 const daysOfWeek = range(7)
 const hours = range(24)
 const minutes = range(60)
-const seconds = minutes
 
 const tomorrow = () => {
   const d = moment().add(1, 'day')
@@ -106,7 +105,7 @@ function dynamicTime (state, onChange) {
           </select>
       </p>
       
-      ${map([[hours, 'hour'], [minutes, 'minute'], [seconds, 'second']], timeSelect)}
+      ${map([[hours, 'hour'], [minutes, 'minute']], timeSelect)}
   </div>`
 }
 function fixedTimeInput (state, onChange) {
@@ -162,8 +161,7 @@ function onSubmitSchedule (e) {
         'day_of_month',
         'month',
         'hour',
-        'minute',
-        'second'
+        'minute'
       ], name => newSchedule[name] !== undefined)
 
       if (selectedPart === undefined) {

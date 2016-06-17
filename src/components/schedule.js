@@ -39,7 +39,7 @@ function processTable (processes) {
   `
 }
 
-function editSchedule ({params: {scheduleId}, store, state}) {
+function viewSchedule ({params: {scheduleId}, store, state}) {
   if (state.isLoading) {
     return yo`
       <div>
@@ -80,6 +80,6 @@ function editSchedule ({params: {scheduleId}, store, state}) {
     </div>`
 }
 
-editSchedule.onEnter = require('../actions/load-one-schedule')
+viewSchedule.onEnter = require('../actions/load-one-schedule')
 
-module.exports = editSchedule
+module.exports = viewSchedule

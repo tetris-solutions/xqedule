@@ -56,6 +56,7 @@ const wrapComponent = curry((store, component, context) => {
     }
   }
 
+  delete context.state.isLoading
   store.local = context.state
   context.store = store
 
@@ -94,6 +95,6 @@ const view = createView(xqedule.store)
 
 page('/', view(require('./components/schedules')))
 page('/create', view(require('./components/create-schedule')))
-page('/schedule/:scheduleId', view(require('./components/edit-schedule')))
+page('/schedule/:scheduleId', view(require('./components/schedule')))
 page('*', view(require('./components/not-found')))
 page()
