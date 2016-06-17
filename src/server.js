@@ -107,7 +107,7 @@ server.get('/api/task/:id', function (req, res, next) {
 
 server.post('/api/task', function (req, res, next) {
   const task = {
-    id: shortid(),
+    id: req.body.id,
     name: req.body.name,
     command: req.body.command,
     params: req.body.params ? JSON.stringify(req.body.params) : null,

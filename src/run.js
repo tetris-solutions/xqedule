@@ -109,7 +109,7 @@ function run (schedule) {
       /**  @type {ChildProcess} */
       const childProcess = spawn(parts[0], parts.slice(1), {
         cwd: rootPath,
-        stdio: [null, 'pipe', 'pipe']
+        stdio: ['ipc', 'pipe', 'pipe']
       })
 
       const instance = running[schedule.id] = {childProcess}

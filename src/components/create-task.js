@@ -19,6 +19,7 @@ function createTask ({state, store, save}) {
     e.preventDefault()
 
     const newTask = {
+      id: e.target.elements.id.value,
       name: e.target.elements.name.value,
       command: e.target.elements.command.value,
       params: {}
@@ -48,6 +49,8 @@ function createTask ({state, store, save}) {
     save()
   }
 
+  state.id = state.id || Math.random().toString(36).substr(2)
+  state.name = state.name || 'New task'
   state.params = state.params || [defaultParam(1)]
 
   function paramInput ({name, description}, index) {
@@ -71,6 +74,10 @@ function createTask ({state, store, save}) {
         <header><h1>Create task</h1></header>
         <main>
             <form onsubmit=${onSubmit}>
+                <p>
+                    <label>Task id</label>
+                    <input name='id' value=${state.id} onchange=${onChange} required />
+                </p>
                 <p>
                     <label>Task name</label>
                     <input name='name' value=${state.name || ''} onchange=${onChange} required />
