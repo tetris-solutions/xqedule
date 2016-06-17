@@ -114,6 +114,7 @@ function run (schedule) {
       childProcess.stderr.pipe(logWriteStream)
 
       logger.debug(`Started ${schedule.task.name} with pid ${childProcess.pid}`, {
+        last_execution: moment(schedule.lastExecution).fromNow(),
         schedule_id: schedule.id,
         process_id: id,
         pid: childProcess.pid,
