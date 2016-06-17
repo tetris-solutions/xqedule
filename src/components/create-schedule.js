@@ -228,10 +228,8 @@ function createSchedule ({store: {task}, state, save}) {
     return yo`
       <div>
         <p>
-          <label>Task</label>
           <input type='hidden' name='task' value='${task.id}' />
-          <input value='${task.name}' readonly />
-          <br>
+          <h4>${task.name}</h4>
           <pre>$ ${task.command}</pre>
         </p>
         ${map(task.params, scheduleParam.bind(null, state, onChange))}
