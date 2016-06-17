@@ -193,7 +193,7 @@ function intervalInput (state, onChange) {
   return yo`
   <p>
     <label>Every </label>
-    <input type='number' name='interval.value' onchange=${onChange} value='${toNum(state['interval.value'])}' required />
+    <input type='number' min=5 name='interval.value' onchange=${onChange} value='${toNum(state['interval.value'])}' required />
     <select name='interval.multiplier' onchange=${onChange} required>
         <option value=''>-- select --</option>
         ${map(intervalUnits, (value, name) => yo`
@@ -205,7 +205,7 @@ function intervalInput (state, onChange) {
   </p>`
 }
 
-function createSchedule ({store: {task}, state, save}) {
+function createSchedule ({store, state, save}) {
   const onChange = ({target}) => {
     state[target.name] = target.value
 
@@ -228,11 +228,11 @@ function createSchedule ({store: {task}, state, save}) {
     return yo`
       <div>
         <p>
-          <input type='hidden' name='task' value='${task.id}' />
-          <h4>${task.name}</h4>
-          <pre>$ ${task.command}</pre>
+          <input type='hidden' name='task' value='${store.task.id}' />
+          <h4>${store.task.name}</h4>
+          <pre>$ ${store.task.command}</pre>
         </p>
-        ${map(task.params, scheduleParam.bind(null, state, onChange))}
+        ${map(store.task.params, scheduleParam.bind(null, state, onChange))}
       </div>`
   }
 

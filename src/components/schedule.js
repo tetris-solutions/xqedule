@@ -40,7 +40,10 @@ function processTable (processes) {
   `
 }
 
-function viewSchedule ({params: {scheduleId}, store: {schedule}, state}) {
+function viewSchedule ({params, store, state}) {
+  const {scheduleId} = params
+  const {schedule} = store
+
   if (state.isLoading) {
     return yo`
       <div>

@@ -19,10 +19,3 @@ spawn('node', ['--expose-gc', daemonScript], {
   env: process.env,
   stdio: 'inherit'
 })
-
-if (developmentMode) {
-  spawn('npm', ['run', 'watch'], {
-    cwd: resolve(__dirname, '..'),
-    stdio: 'inherit'
-  })
-}

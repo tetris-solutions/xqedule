@@ -4,9 +4,9 @@ const set = require('lodash/set')
 const map = require('lodash/map')
 const page = require('page')
 
-function createTask ({state, store, save}) {
-  function onChange ({target: {name, value}}) {
-    set(state, name, value)
+function createTask ({state, save}) {
+  function onChange ({target}) {
+    set(state, target.name, target.value)
     save()
   }
 
