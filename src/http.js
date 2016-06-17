@@ -1,57 +1,44 @@
 const assign = require('lodash/assign')
+const xhr = require('xhr')
 
-function toJSON (response) {
-  if (response.status === 204) return response
-
-  function invalidResponse () {
-    response.data = {
-      message: 'Oopss... The API returned an invalid response'
-    }
-    response.data.stack = new Error().stack
-    return Promise.reject(response)
-  }
-
-  if (typeof response.json !== 'function') {
-    return invalidResponse()
-  }
-
-  return response.json()
-    .then(function (data) {
-      response.data = data
-      return response
-    })
-    .catch(invalidResponse)
-}
-
-function checkStatus (response) {
-  return response.ok ? response : Promise.reject(response)
-}
-
-const sendsJson = {
-  'Content-Type': 'application/json'
-}
-
-function apiFetch (endpoint, config) {
-  const reqConfig = assign({}, config)
+function apiFetch (uri, config) {
+  const reqConfig = assign({uri}, config)
 
   reqConfig.headers = assign(reqConfig.headers || {}, {
-    credentials: 'same-origin',
     Accept: 'application/json'
   })
 
   if (reqConfig.body) {
     reqConfig.body = JSON.stringify(reqConfig.body)
-    assign(reqConfig.headers, sendsJson)
+
+    assign(reqConfig.headers, {
+      'Content-Type': 'application/json'
+    })
   }
 
-  return fetch(endpoint, reqConfig)
-    .then(toJSON)
-    .then(checkStatus)
+  return new Promise((resolve, reject) =>
+    xhr(reqConfig, (err, response, body) => {
+      if (typeof body === 'string') {
+        try {
+          body = JSON.parse(body)
+        } catch (e) {
+
+        }
+      }
+
+      if (err) {
+        response.data = body && body.message ? body : err
+        reject(response)
+      } else {
+        response.data = body
+        resolve(response)
+      }
+    }))
 }
 
 function useMethod (method) {
   return function (endpoint, config) {
-    return apiFetch(endpoint, assign({method: method}, config))
+    return apiFetch(endpoint, assign({method}, config))
   }
 }
 

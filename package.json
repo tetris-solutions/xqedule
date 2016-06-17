@@ -51,6 +51,7 @@
     "shortid": "^2.2.6",
     "sqlite3": "^3.1.4",
     "winston": "^2.2.0",
+    "xhr": "^2.2.0",
     "yo-yo": "^1.2.1"
   },
   "devDependencies": {
