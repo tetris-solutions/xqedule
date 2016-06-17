@@ -205,18 +205,7 @@ function intervalInput (state, onChange) {
   </p>`
 }
 
-function createSchedule ({store, state, save}) {
-  /**
-   * event handler form task <select>
-   * @param {Event} e change event
-   * @returns {undefined}
-   */
-  function onChangeTask (e) {
-    const id = e.target.value
-    state.task = find(store.tasks, {id})
-    save()
-  }
-
+function createSchedule ({store: {task}, state, save}) {
   const onChange = ({target}) => {
     state[target.name] = target.value
 
@@ -229,13 +218,24 @@ function createSchedule ({store, state, save}) {
 
   state.mode = state.mode || 'dynamic'
 
-  const selectedTask = state.task && state.task.id
-  const params = state.task && state.task.params
-
   const periodSelector = {
     dynamic: dynamicTime,
     fixed: fixedTimeInput,
     interval: intervalInput
+  }
+
+  function taskConfig () {
+    return yo`
+      <div>
+        <p>
+          <label>Task</label>
+          <input type='hidden' name='task' value='${task.id}' />
+          <input value='${task.name}' readonly />
+          <br>
+          <pre>$ ${task.command}</pre>
+        </p>
+        ${map(task.params, scheduleParam.bind(null, state, onChange))}
+      </div>`
   }
 
   return yo`
@@ -245,40 +245,33 @@ function createSchedule ({store, state, save}) {
       </header>
       <main>
         <form onsubmit=${onSubmitSchedule}>
-          <p>
-            <label>Task</label>
+          <fieldset>
+                <legend>Task configuration</legend>
+                ${state.isLoading ? yo`<p>Loading task...</p>` : taskConfig()}
+          </fieldset>
+          
+          <fieldset>
+                <legend>Schedule configuration</legend>
+                ${map(['dynamic', 'fixed', 'interval'], value => yo`
+                <label>
+                  <input type='radio'
+                        name='mode'
+                        onchange=${onChange}
+                        value=${value}
+                        ${state.mode === value ? 'checked' : ''} />
+                         
+                  ${capitalize(value)} schedule
+                </label>`)}
             
-            <select name='task' onchange=${onChangeTask} required>
-              <option value=''>-- select --</option>
-              
-              ${store.tasks.map(({id, name}) => yo`
-                <option value='${id}' ${selectedTask === id ? 'selected' : ''}>
-                  ${name}
-                </option>`)}
-            </select>
-          </p>
-          
-          ${map(params, scheduleParam.bind(null, state, onChange))}
-          
-          ${map(['dynamic', 'fixed', 'interval'], value => yo`
-              <label>
-                <input type='radio'
-                      name='mode'
-                      onchange=${onChange}
-                      value=${value}
-                      ${state.mode === value ? 'checked' : ''} />
-                       
-                ${capitalize(value)} schedule
-              </label>`)}
-          
-          ${periodSelector[state.mode](state, onChange)}
-          
+                ${periodSelector[state.mode](state, onChange)}                          
+          </fieldset>
+          <br>
           <a href='/'>cancel</a> <button type='submit'>Create</button>
         </form>
       </main>
     </div>`
 }
 
-createSchedule.onEnter = require('../actions/load-tasks')
+createSchedule.onEnter = require('../actions/load-one-task')
 
 module.exports = createSchedule

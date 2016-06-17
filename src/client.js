@@ -93,8 +93,9 @@ const createView = curry((store, component) =>
 
 const view = createView(xqedule.store)
 
-page('/', view(require('./components/schedules')))
-page('/create', view(require('./components/create-schedule')))
+page('/', view(require('./components/home')))
+page('/create/schedule/:taskId', view(require('./components/create-schedule')))
+page('/create/task', view(require('./components/create-task')))
 page('/schedule/:scheduleId', view(require('./components/schedule')))
 page('*', view(require('./components/not-found')))
 page()

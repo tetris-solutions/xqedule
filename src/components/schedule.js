@@ -73,7 +73,6 @@ function viewSchedule ({params: {scheduleId}, store, state}) {
             </h1>
         </header>
         <main>
-            <del>This is already a bit problematic for me</del>
             ${processTable(schedule.processes)}
             <br>
             <a href='/'>cancel</a> <button onclick=${onRemoveClick}>remove</button>

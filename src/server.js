@@ -70,6 +70,49 @@ server.get('/api/schedule/:id', function (req, res, next) {
     .catch(err => next(new restify.InternalServerError(err.message)))
 })
 
+server.get('/api/task/:id', function (req, res, next) {
+  return db.first('*')
+    .from('task')
+    .where('id', req.params.id)
+    .then(task => {
+      if (!task) {
+        return next(new restify.NotFoundError('Schedule not found'))
+      }
+
+      res.json(addParsedParams(task))
+    })
+    .catch(err => next(new restify.InternalServerError(err.message)))
+})
+
+server.post('/api/task', function (req, res, next) {
+  const task = {
+    id: shortid(),
+    name: req.body.name,
+    command: req.body.command,
+    params: req.body.params ? JSON.stringify(req.body.params) : null,
+    creation: (new Date()).toISOString()
+  }
+
+  return db.insert(task)
+    .into('task')
+    .then(() => {
+      res.json(201, {id: task.id})
+    })
+    .catch(err => next(new restify.ConflictError(err.message)))
+})
+
+server.del('/api/task/:id', function (req, res, next) {
+  return db('task')
+    .where('id', req.params.id)
+    .del()
+    .then(() => {
+      emitter.emit('task::delete', req.params.id)
+
+      res.send(204, '')
+    })
+    .catch(err => next(new restify.ConflictError(err.message)))
+})
+
 server.post('/api/schedule', function (req, res, next) {
   const schedule = assign({}, req.body, {
     id: shortid(),

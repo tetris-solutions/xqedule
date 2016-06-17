@@ -10,7 +10,9 @@ const scheduleTime = ({
   minute
 }) => {
   if (interval) {
-    return `interval of ${moment.duration(interval, 'seconds')}`
+    return interval < 60
+      ? `interval of ${interval} seconds`
+      : `interval of ${moment.duration(interval, 'seconds').humanize()}`
   }
 
   if (timestamp) {
