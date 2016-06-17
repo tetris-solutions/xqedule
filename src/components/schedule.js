@@ -40,7 +40,7 @@ function processTable (processes) {
   `
 }
 
-function viewSchedule ({params: {scheduleId}, store, state}) {
+function viewSchedule ({params: {scheduleId}, store: {schedule}, state}) {
   if (state.isLoading) {
     return yo`
       <div>
@@ -53,8 +53,6 @@ function viewSchedule ({params: {scheduleId}, store, state}) {
       </div>
     `
   }
-
-  const {schedule} = store
 
   if (!schedule) {
     throw new Error(`Schedule ${scheduleId} was not found`)
@@ -69,7 +67,7 @@ function viewSchedule ({params: {scheduleId}, store, state}) {
     <div>
         <header>
             <h1>
-                ${schedule.task} <small>${scheduleTime(schedule)}</small>
+                "${schedule.task.name}" <small>${scheduleTime(schedule)}</small>
             </h1>
         </header>
         <main>

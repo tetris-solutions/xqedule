@@ -1,4 +1,5 @@
 const assign = require('lodash/assign')
+const omit = require('lodash/omit')
 const shortid = require('shortid')
 const restify = require('restify')
 const emitter = require('./emitter')
@@ -44,13 +45,33 @@ server.get('/api/schedules', function (req, res, next) {
 })
 
 server.get('/api/schedule/:id', function (req, res, next) {
-  return db.first('*')
+  return db.first('schedule.*',
+    'task.command AS task_command',
+    'task.id AS task_id',
+    'task.params AS task_params',
+    'task.name AS task_name')
     .from('schedule')
-    .where('id', req.params.id)
+    .join('task', 'task.id', 'schedule.task')
+    .where('schedule.id', req.params.id)
     .then(schedule => {
       if (!schedule) {
         return next(new restify.NotFoundError('Schedule not found'))
       }
+
+      schedule = assign(
+        {
+          task: addParsedParams({
+            command: schedule.task_command,
+            id: schedule.task_id,
+            name: schedule.task_name,
+            params: schedule.task_params
+          })
+        }, omit(schedule,
+          'task',
+          'task_id',
+          'task_command',
+          'task_params',
+          'task_name'))
 
       return db.select()
         .from('process')
