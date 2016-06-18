@@ -25,12 +25,12 @@ const serializeError = err => assign({}, err, pick(err, 'message', 'stack', 'cod
  */
 function monitor (childProcess, process) {
   const {pid} = childProcess
+  let hasExited = false
+  let lock
+  let interval
 
   process.cpu_usage = []
   process.memory_usage = []
-
-  let lock
-  let interval
 
   const persistStat = () => db('process')
     .where('id', process.id)
@@ -48,7 +48,7 @@ function monitor (childProcess, process) {
       lock = false
 
       if (err) {
-        logger.notice(`could not read stats for instance of schedule ${process.schedule}`, {
+        logger.notice(`could not read stats for ${process.schedule.task.name}`, {
           pid,
           process,
           error: serializeError(err)
@@ -66,8 +66,14 @@ function monitor (childProcess, process) {
   }
 
   function onExit (code = null) {
+    if (hasExited) return
+
+    hasExited = true
+
     delete running[process.schedule]
     usage.unmonitor(childProcess.pid)
+
+    process.logWriteStream.end()
 
     clearInterval(interval)
 
@@ -84,10 +90,22 @@ function monitor (childProcess, process) {
     interval = setInterval(getStat, REFRESH_STAT_INTERVAL)
     getStat()
   } else {
-    persistStat()
-    onExit()
+    setTimeout(() => {
+      persistStat()
+      onExit()
+    }, 100)
   }
 
+  function handleError (err) {
+    setTimeout(() => {
+      logger.error(`${process.schedule.task.name} with pid of ${pid} has failed`,
+        serializeError(err))
+
+      onExit(isNaN(Number(err.code)) ? null : Number(err.code))
+    }, 100)
+  }
+
+  childProcess.on('error', handleError)
   childProcess.on('exit', onExit)
 }
 
@@ -115,8 +133,8 @@ function run (schedule) {
 
       const instance = running[schedule.id] = {childProcess}
 
-      childProcess.stdout.pipe(logWriteStream)
-      childProcess.stderr.pipe(logWriteStream)
+      childProcess.stdout.pipe(logWriteStream, {end: false})
+      childProcess.stderr.pipe(logWriteStream, {end: false})
 
       logger.debug(`Started ${schedule.task.name} with pid ${childProcess.pid}`, {
         last_execution: moment(schedule.lastExecution).fromNow(),
@@ -140,8 +158,9 @@ function run (schedule) {
       instance.process = process
       schedule.lastExecution = process.creation
 
-      return db('process').insert(process)
-        .then(() => monitor(childProcess, process))
+      monitor(childProcess, assign({}, process, {schedule, logWriteStream}))
+
+      return db('process').insert(process).then()
     })
     .catch(err => {
       logger.crit(`Failed to run schedule for ${schedule.task.name}`, {
