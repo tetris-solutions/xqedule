@@ -54,8 +54,7 @@ function viewSchedule ({params, store, state}) {
         <main>
             <p>Loading...</p>        
         </main>
-      </div>
-    `
+      </div>`
   }
 
   if (!schedule) {
