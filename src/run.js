@@ -70,7 +70,7 @@ function monitor (childProcess, process) {
 
     hasExited = true
 
-    delete running[process.schedule]
+    delete running[process.schedule.id]
     usage.unmonitor(childProcess.pid)
 
     process.logWriteStream.end()
