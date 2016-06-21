@@ -198,6 +198,8 @@ const tickInterval = setInterval(tick, 1000 * 5)
 
 emitter.on('schedule::insert', updateSchedules)
 emitter.on('schedule::delete', updateSchedules)
+emitter.on('schedule::update', updateSchedules)
+
 emitter.on('task::insert', updateSchedules)
 emitter.on('task::delete', updateSchedules)
 

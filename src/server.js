@@ -167,4 +167,20 @@ server.del('/api/schedule/:id', function (req, res, next) {
     .catch(err => next(new restify.ConflictError(err.message)))
 })
 
+server.put('/api/schedule/:id', function (req, res, next) {
+  const {id} = req.params
+  const immutableScheduleAttributes = ['id', 'task', 'creation']
+  const changes = omit(req.body, immutableScheduleAttributes)
+
+  return db('schedule')
+    .where('id', id)
+    .update(changes)
+    .then(() => {
+      emitter.emit('schedule::update', assign({id}, changes))
+
+      res.json(204)
+    })
+    .catch(err => next(new restify.ConflictError(err.message)))
+})
+
 server.listen(10171)
