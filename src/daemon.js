@@ -202,6 +202,7 @@ emitter.on('schedule::update', updateSchedules)
 
 emitter.on('task::insert', updateSchedules)
 emitter.on('task::delete', updateSchedules)
+emitter.on('task::update', updateSchedules)
 
 emitter.on('placeholder::event', () => {
   clearInterval(tickInterval)

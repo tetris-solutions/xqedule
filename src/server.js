@@ -172,11 +172,35 @@ server.put('/api/schedule/:id', function (req, res, next) {
   const immutableScheduleAttributes = ['id', 'task', 'creation']
   const changes = omit(req.body, immutableScheduleAttributes)
 
+  if (changes.params) {
+    changes.params = JSON.stringify(changes.params)
+  }
+
   return db('schedule')
     .where('id', id)
     .update(changes)
     .then(() => {
       emitter.emit('schedule::update', assign({id}, changes))
+
+      res.json(204)
+    })
+    .catch(err => next(new restify.ConflictError(err.message)))
+})
+
+server.put('/api/task/:id', function (req, res, next) {
+  const {id} = req.params
+  const immutableAttributes = ['id', 'creation']
+  const changes = omit(req.body, immutableAttributes)
+
+  if (changes.params) {
+    changes.params = JSON.stringify(changes.params)
+  }
+
+  return db('task')
+    .where('id', id)
+    .update(changes)
+    .then(() => {
+      emitter.emit('task::update', assign({id}, changes))
 
       res.json(204)
     })

@@ -39,7 +39,8 @@ function taskDisplay (task, onClickDelete) {
             </tbody>
         </table>
         <br>
-        <button onclick=${onClickDelete.bind(null, task.id)}>remove</button>
+        <button onclick=${onClickDelete.bind(null, task.id)}>Remove Task</button>
+        <a href='/task/${task.id}'>Edit task</a>
         <a href='/create/schedule/${task.id}'>Add schedule</a>
         <br>
         <br>
