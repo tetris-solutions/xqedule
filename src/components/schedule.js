@@ -75,6 +75,7 @@ function viewSchedule (context) {
       state.timestamp = d.format('YYYY-MM-DD') + 'T' + d.format('HH:mm')
     } else {
       state.mode = 'dynamic'
+      state.timezone = schedule.timezone
       state.hour = schedule.hour
       state.minute = schedule.minute
       state.month = schedule.month

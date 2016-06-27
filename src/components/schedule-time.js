@@ -23,7 +23,7 @@ const scheduleTime = ({
   const d = moment()
 
   if (day_of_week !== null) {
-    parts.push('on ' + d.day(day_of_week - 1).format('dddd') + 's')
+    parts.push('on ' + d.day(day_of_week).format('dddd') + 's')
   }
 
   if (day_of_month !== null) {

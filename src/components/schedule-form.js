@@ -53,7 +53,7 @@ function dynamicTime (state, onChange) {
         <select name='${name}' onchange=${onChange}>
             <option value=''>*</option>
             ${map(ls, val => yo`
-                <option ${Number(val) === Number(state[name]) ? 'selected' : ''} value='${val}'>
+                <option ${state[name] !== null && Number(val) === Number(state[name]) ? 'selected' : ''} value='${val}'>
                   ${padStart(val, 2, '0')}
                 </option>`)}
         </select>
@@ -88,7 +88,7 @@ function dynamicTime (state, onChange) {
           <select name='day_of_week' onchange=${onChange}>
               <option value=''>*</option>
               ${map(daysOfWeek, day => yo`
-                  <option ${Number(day) === Number(state.day_of_week) ? 'selected' : ''} value='${day}'>
+                  <option ${state.day_of_week !== null && Number(day) === Number(state.day_of_week) ? 'selected' : ''} value='${day}'>
                     ${moment().day(day).format('dddd')}
                   </option>`)}
           </select>
@@ -149,22 +149,10 @@ function onSubmitSchedule (e) {
   switch (mode) {
     case 'fixed':
       newSchedule.timestamp = moment(newSchedule.timestamp).toISOString()
-      newSchedule.interval = null
-      newSchedule.hour = null
-      newSchedule.minute = null
-      newSchedule.month = null
-      newSchedule.day_of_week = null
-      newSchedule.day_of_month = null
       break
 
     case 'interval':
       newSchedule.interval = parseInt(Number(newSchedule.interval.value)) * Number(newSchedule.interval.multiplier)
-      newSchedule.timestamp = null
-      newSchedule.hour = null
-      newSchedule.minute = null
-      newSchedule.month = null
-      newSchedule.day_of_week = null
-      newSchedule.day_of_month = null
       break
 
     case 'dynamic':
@@ -187,10 +175,25 @@ function onSubmitSchedule (e) {
         input.reportValidity()
         return
       }
-      newSchedule.interval = null
-      newSchedule.timestamp = null
       break
   }
+
+  const nullableFields = [
+    'timezone',
+    'day_of_week',
+    'day_of_month',
+    'month',
+    'hour',
+    'minute',
+    'interval',
+    'timestamp'
+  ]
+
+  nullableFields.forEach(field => {
+    if (newSchedule[field] === undefined) {
+      newSchedule[field] = null
+    }
+  })
 
   const promise = form.elements.id
     ? http.PUT(`/api/schedule/${form.elements.id.value}`, {body: newSchedule})
