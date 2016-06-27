@@ -6,6 +6,9 @@ const mean = require('lodash/mean')
 const bytes = require('pretty-bytes')
 const scheduleTime = require('./schedule-time')
 const command = require('../compiled-command')
+const scheduleForm = require('./schedule-form')
+const loadOneSchedule = require('../actions/load-one-schedule')
+const forEach = require('lodash/forEach')
 
 function processRow ({pid, creation, end, log_file, memory_usage, cpu_usage, command}) {
   return yo`
@@ -41,7 +44,8 @@ function processTable (processes) {
   `
 }
 
-function viewSchedule ({params, store, state}) {
+function viewSchedule (context) {
+  const {params, store, state} = context
   const {scheduleId} = params
   const {schedule} = store
 
@@ -55,6 +59,28 @@ function viewSchedule ({params, store, state}) {
             <p>Loading...</p>        
         </main>
       </div>`
+  }
+
+  if (!state.mode) {
+    forEach(schedule.params, (value, name) => {
+      state[`params.${name}`] = value
+    })
+
+    if (schedule.interval) {
+      state.mode = 'interval'
+      state.interval = schedule.interval
+    } else if (schedule.timestamp) {
+      state.mode = 'fixed'
+      const d = moment(schedule.timestamp)
+      state.timestamp = d.format('YYYY-MM-DD') + 'T' + d.format('HH:mm')
+    } else {
+      state.mode = 'dynamic'
+      state.hour = schedule.hour
+      state.minute = schedule.minute
+      state.month = schedule.month
+      state.day_of_week = schedule.day_of_week
+      state.day_of_month = schedule.day_of_month
+    }
   }
 
   if (!schedule) {
@@ -75,13 +101,22 @@ function viewSchedule ({params, store, state}) {
         </header>
         <main>
             <pre>$ ${command(schedule.task, schedule)}</pre>
-            ${processTable(schedule.processes)}
-            <br>
             <a href='/'>cancel</a> <button onclick=${onRemoveClick}>remove</button>
+            <br><br>
+            <h3>Process history</h3>
+            ${processTable(schedule.processes)}
+            <br><br>
+            <h3>Edit Schedule</h3>
+            ${scheduleForm(context)}
         </main>
     </div>`
 }
 
-viewSchedule.onEnter = require('../actions/load-one-schedule')
+viewSchedule.onEnter = context =>
+  loadOneSchedule(context)
+    .then(r => {
+      context.store.task = context.store.schedule.task
+      return r
+    })
 
 module.exports = viewSchedule
