@@ -256,9 +256,7 @@ function scheduleForm ({store, state, save}) {
 
   return yo`
     <form onsubmit=${onSubmitSchedule}>
-      ${store.schedule && yo`
-          <input type=hidden name='id' value=${store.schedule.id} />
-      `}
+      ${store.schedule ? yo`<input type=hidden name='id' value=${store.schedule.id} />` : ''}
       <fieldset>
             <legend>Task configuration</legend>
             ${state.isLoading ? yo`<p>Loading task...</p>` : taskConfig()}
