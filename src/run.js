@@ -10,6 +10,7 @@ const assign = require('lodash/assign')
 const pick = require('lodash/pick')
 const round = require('lodash/round')
 const compiledCommand = require('./compiled-command')
+const isNumber = require('lodash/isNumber')
 
 const running = {}
 
@@ -77,7 +78,12 @@ function monitor (childProcess, process) {
 
     clearInterval(interval)
 
-    process.exit_code = code
+    if (isNumber(code)) {
+      process.exit_code = code
+    } else if (isNumber(childProcess.exitCode)) {
+      process.exit_code = childProcess.exitCode
+    }
+
     process.end = new Date().toISOString()
 
     return db('process').where('id', process.id).update({

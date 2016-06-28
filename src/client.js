@@ -10,6 +10,7 @@ let currentContext
 class XQedule {
   constructor () {
     this.store = {
+      task: null,
       schedule: null,
       schedules: [],
       tasks: []
