@@ -72,6 +72,9 @@ const asyncComponent = curry((component, context) => {
   if (context.state.isLoading === undefined) {
     context.state.isLoading = true
 
+    context.store.task = null
+    context.store.schedule = null
+
     component.onEnter(context)
       .then(r => {
         context.state.isLoading = false

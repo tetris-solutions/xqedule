@@ -62,7 +62,7 @@ function monitor (childProcess, process) {
       persistStat()
     })
 
-    global.gc()
+    // global.gc()
   }
 
   function onExit (code = null) {

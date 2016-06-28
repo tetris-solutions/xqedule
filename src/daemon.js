@@ -178,7 +178,7 @@ function getMatchingSchedules (schedules, timezone) {
 }
 
 function tick () {
-  global.gc()
+  // global.gc()
 
   filter(schedules.interval, intervalHasExpired)
     .forEach(run)
