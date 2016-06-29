@@ -8,7 +8,7 @@ const db = require('./db')
 const server = restify.createServer()
 const map = require('lodash/map')
 
-const toJSON = str => {
+const safeParseJSON = str => {
   if (!str) return null
 
   try {
@@ -17,6 +17,11 @@ const toJSON = str => {
     return null
   }
 }
+
+server.use((req, res, next) => {
+  req.db = db
+  next()
+})
 
 server.use(restify.CORS())
 server.use(restify.queryParser())
@@ -81,13 +86,30 @@ server.get('/api/schedule/:id', function (req, res, next) {
         .limit(20)
         .then(ps => {
           schedule.processes = map(ps, p => {
-            p.cpu_usage = toJSON(p.cpu_usage) || []
-            p.memory_usage = toJSON(p.memory_usage) || []
+            p.cpu_usage = safeParseJSON(p.cpu_usage) || []
+            p.memory_usage = safeParseJSON(p.memory_usage) || []
             return p
           })
 
           res.json(addParsedParams(schedule))
         })
+    })
+    .catch(err => next(new restify.InternalServerError(err.message)))
+})
+
+server.get('/api/process/:id', function (req, res, next) {
+  return db.first('*')
+    .from('process')
+    .where('id', req.params.id)
+    .then(process => {
+      if (!process) {
+        return next(new restify.NotFoundError('Process not found'))
+      }
+
+      process.cpu_usage = safeParseJSON(process.cpu_usage) || []
+      process.memory_usage = safeParseJSON(process.memory_usage) || []
+
+      res.json(process)
     })
     .catch(err => next(new restify.InternalServerError(err.message)))
 })
@@ -98,7 +120,7 @@ server.get('/api/task/:id', function (req, res, next) {
     .where('id', req.params.id)
     .then(task => {
       if (!task) {
-        return next(new restify.NotFoundError('Schedule not found'))
+        return next(new restify.NotFoundError('Task not found'))
       }
 
       res.json(addParsedParams(task))
@@ -206,5 +228,7 @@ server.put('/api/task/:id', function (req, res, next) {
     })
     .catch(err => next(new restify.ConflictError(err.message)))
 })
+
+require('./log-event-source')(server, db)
 
 server.listen(10171)

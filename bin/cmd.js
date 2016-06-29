@@ -22,6 +22,9 @@ const developmentMode = process.env.NODE_ENV === 'development'
 // })
 
 if (developmentMode) {
+  /* eslint-disable */
+  console.log('<<<< DEV MODE >>>')
+  /* eslint-enable */
   require('../src/daemon')
 } else {
   require('../lib/daemon')

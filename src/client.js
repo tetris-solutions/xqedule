@@ -10,6 +10,7 @@ let currentContext
 class XQedule {
   constructor () {
     this.store = {
+      process: null,
       task: null,
       schedule: null,
       schedules: [],
@@ -39,9 +40,12 @@ function onError (context, err) {
 }
 
 const wrapComponent = curry((store, component, context) => {
+  if (currentContext && currentContext.onleave) {
+    currentContext.onleave()
+  }
   currentContext = context
 
-  const _save = context.save.bind(context)
+  const originalSave = context.save.bind(context)
 
   function render () {
     if (currentContext !== context) return
@@ -62,7 +66,7 @@ const wrapComponent = curry((store, component, context) => {
   context.store = store
 
   context.save = () => {
-    _save()
+    originalSave()
     render()
   }
 
@@ -75,6 +79,7 @@ const asyncComponent = curry((component, context) => {
 
     context.store.task = null
     context.store.schedule = null
+    context.store.process = null
 
     component.onEnter(context)
       .then(r => {
@@ -104,6 +109,7 @@ page('/task/:taskId', view(require('./components/edit-task')))
 
 page('/create/schedule/:taskId', view(require('./components/create-schedule')))
 page('/schedule/:scheduleId', view(require('./components/schedule')))
+page('/process/:processId', view(require('./components/process')))
 
 page('*', view(require('./components/not-found')))
 page()

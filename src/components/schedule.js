@@ -10,11 +10,11 @@ const scheduleForm = require('./schedule-form')
 const loadOneSchedule = require('../actions/load-one-schedule')
 const forEach = require('lodash/forEach')
 
-function processRow ({pid, creation, end, log_file, memory_usage, cpu_usage, command}) {
+function processRow ({id, pid, creation, end, log_file, memory_usage, cpu_usage, command}) {
   return yo`
     <tr>
       <td>${moment(creation).fromNow()}</td>
-      <td>${pid}</td>
+      <td><a href='/process/${id}'>${pid}</a></td>
       <td>${end ? moment(end).fromNow() : '---'}</td>
       <td>${command}</td>
       <td>${cpu_usage.length ? mean(cpu_usage).toFixed(2) + '%' : '--'}</td>
@@ -32,8 +32,8 @@ function processTable (processes) {
           <th>PID</th>
           <th>End</th>
           <th>Command</th>
-          <th>CPU Usage</th>
-          <th>Memory Usage</th>
+          <th>CPU usage</th>
+          <th>Memory footprint</th>
           <th>Log file</th>
         </tr>
     </thead>
