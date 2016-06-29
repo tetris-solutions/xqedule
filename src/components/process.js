@@ -35,7 +35,7 @@ function processDescription ({command, cpu_usage, memory_usage, creation, end, e
           <dd>${cpu_usage.length ? mean(cpu_usage).toFixed(2) + '%' : '--'}</dd>
           <dt>Memory footprint</dt>
           <dd>${memory_usage.length ? bytes(mean(memory_usage)) : '--'}</dd>
-          <pre style='background: black; color: green; width: 70%; margin: 1em auto'>${log}</pre>
+          <pre style='background: black; color: green; width: 90%; overflow-x: auto; margin: 1em auto'>${log}</pre>
       </dl>
     </main>`
 }
