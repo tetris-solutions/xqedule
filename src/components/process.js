@@ -64,7 +64,7 @@ processView.onEnter = context =>
     .then(() => {
       const {process} = context.store
 
-      process.log = ''
+      process.log = `$ ${process.command}\n`
 
       const eventSource = new window.EventSource(`/api/process/${process.id}/watch`)
 
