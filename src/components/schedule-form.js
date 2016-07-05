@@ -213,10 +213,33 @@ const intervalUnits = {
 const toNum = n => isNaN(Number(n)) ? 0 : Number(n)
 
 function intervalInput (state, onChange) {
+  if (state.interval && !state['interval.value']) {
+    if (state.interval >= intervalUnits.days && state.interval % intervalUnits.days === 0) {
+      state['interval.multiplier'] = intervalUnits.days
+      state['interval.value'] = state.interval / intervalUnits.days
+    } else if (state.interval >= intervalUnits.hours && state.interval % intervalUnits.hours === 0) {
+      state['interval.multiplier'] = intervalUnits.hours
+      state['interval.value'] = state.interval / intervalUnits.hours
+    } else if (state.interval >= intervalUnits.minutes && state.interval % intervalUnits.minutes === 0) {
+      state['interval.multiplier'] = intervalUnits.minutes
+      state['interval.value'] = state.interval / intervalUnits.minutes
+    } else {
+      state['interval.multiplier'] = intervalUnits.seconds
+      state['interval.value'] = state.interval
+    }
+  }
+
   return yo`
   <p>
     <label>Every </label>
-    <input type='number' min=5 name='interval.value' onchange=${onChange} value='${toNum(state['interval.value'])}' required />
+    
+    <input type='number'
+        name='interval.value'
+        onchange=${onChange}
+        value='${toNum(state['interval.value'])}'
+        min=${Number(state['interval.multiplier']) === 1 ? 5 : 0}
+        required />
+        
     <select name='interval.multiplier' onchange=${onChange} required>
         <option value=''>-- select --</option>
         ${map(intervalUnits, (value, name) => yo`

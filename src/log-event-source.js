@@ -79,10 +79,7 @@ function tailLogFile (req, res, next) {
         return new restify.InternalServerError(err.message || 'Error reading log')
       }
 
-      const lines = contentString.split('\n')
-
-      lines.pop()
-      lines.forEach(sendLogLine)
+      sendLogLine(contentString)
 
       const tail = new Tail(filePath)
       let watching = true
