@@ -28,6 +28,7 @@ const sCols = [
   'schedule.month',
   'schedule.hour',
   'schedule.minute']
+
 const sequential = (ls, fn) => {
   let promise = Promise.resolve()
   const results = []
@@ -51,14 +52,14 @@ function removeLogFile (filePath) {
     if (statErr) {
       resolve(0) // file does not exist or something
     } else {
-      resolve(stats.size)
-      // fs.unlink(filePath, rmErr => {
-      //   if (rmErr) {
-      //     reject(rmErr)
-      //   } else {
-      //     resolve(stats.size)
-      //   }
-      // })
+      // resolve(stats.size)
+      fs.unlink(filePath, rmErr => {
+        if (rmErr) {
+          reject(rmErr)
+        } else {
+          resolve(stats.size)
+        }
+      })
     }
   }))
 }
@@ -67,18 +68,14 @@ function removeProcess (proc) {
   const {id, log_file} = proc
 
   return removeLogFile(log_file)
-    .then(bitesSaved => {
-      // db('process').where('id', id).del()
-
-      return bitesSaved
-    })
+    .then(bytesSaved => db('process').where('id', id).del().then(() => bytesSaved))
     .catch(err => {
-      logger.warn(`Could not remove process #${id}`, assign({err}, proc))
+      logger.error(`Could not remove process #${id}`, assign({err}, proc))
     })
 }
 
 function removeManyProcs (procs) {
-  logger.info(`Starting to collect ${procs.length} processes`)
+  logger.info(`DROP ${procs.length} processes`)
 
   return sequential(procs, removeProcess)
     .then(bytes => {
@@ -89,7 +86,7 @@ function removeManyProcs (procs) {
 function removeSchedule (schedule) {
   const {id, task, last_run} = schedule
 
-  logger.info('Garbage collect schedule', `#${id}`, `@${task}`,
+  logger.notice('DROP schedule', `#${id}`, `@${task}`,
     scheduleTime(schedule),
     last_run ? `(last run ${moment(last_run).fromNow()})` : undefined)
 
@@ -97,15 +94,13 @@ function removeSchedule (schedule) {
     .from('process')
     .where('process.schedule', id)
     .then(removeManyProcs)
-    .then(() => {
-      // return db('schedule').where('id', id).del()
-    })
+    .then(() => db('schedule').where('id', id).del())
 }
 
 function cleanScheduleProcs (schedule) {
   const {id, task} = schedule
 
-  logger.info('Garbage collect schedule', `#${id}`, `@${task}`, scheduleTime(schedule))
+  logger.info('CLEAN schedule', `#${id}`, `@${task}`, scheduleTime(schedule))
 
   return db.select(...pColumns)
     .from('process')
@@ -157,7 +152,7 @@ function cleanup () {
     .then(getOrphanProcs)
     .then(procs => removeManyProcs(procs))
 
-    .then(() => db.raw('vacuum'))
+    .then(() => db.raw('vacuum').then())
     .then(r => {
       emitter.emit('cleanup')
 
