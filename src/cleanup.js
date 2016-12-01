@@ -10,7 +10,14 @@ const scheduleTime = require('./components/schedule-time')
 const sum = require('lodash/sum')
 const prettyBytes = require('pretty-bytes')
 
-const pColumns = ['id', 'schedule', 'creation', 'exit_code', 'log_file', 'pid']
+const pColumns = [
+  'process.id',
+  'process.schedule',
+  'process.creation',
+  'process.exit_code',
+  'process.log_file',
+  'process.pid']
+
 const sCols = [
   'schedule.id',
   'schedule.task',
@@ -124,12 +131,33 @@ function cleanup () {
       .from('schedule')
       .whereNull('schedule.timestamp')
 
+  const getOrphanSchedules = () =>
+    db.select(...sCols)
+      .from('schedule')
+      .leftJoin('task', 'task.id', 'schedule.task')
+      .whereNull('task.id')
+
+  const getOrphanProcs = () =>
+    db.select(...pColumns)
+      .from('process')
+      .leftJoin('schedule', 'schedule.id', 'process.schedule')
+      .whereNull('schedule.id')
+
   const run = fn => ls => sequential(ls, fn)
 
   return getStaleOneOffSchedules()
     .then(run(removeSchedule))
+
     .then(getRegularSchedules)
     .then(run(cleanScheduleProcs))
+
+    .then(getOrphanSchedules)
+    .then(run(removeSchedule))
+
+    .then(getOrphanProcs)
+    .then(procs => removeManyProcs(procs))
+
+    .then(() => db.raw('vacuum'))
     .then(r => {
       emitter.emit('cleanup')
 
