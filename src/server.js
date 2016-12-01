@@ -184,7 +184,7 @@ server.del('/api/schedule/:id', function (req, res, next) {
     .then(() => {
       emitter.emit('schedule::delete', req.params.id)
 
-      res.send(204, '')
+      res.send(204)
     })
     .catch(err => next(new restify.ConflictError(err.message)))
 })
@@ -204,7 +204,7 @@ server.put('/api/schedule/:id', function (req, res, next) {
     .then(() => {
       emitter.emit('schedule::update', assign({id}, changes))
 
-      res.json(204)
+      res.send(204)
     })
     .catch(err => next(new restify.ConflictError(err.message)))
 })
@@ -224,9 +224,17 @@ server.put('/api/task/:id', function (req, res, next) {
     .then(() => {
       emitter.emit('task::update', assign({id}, changes))
 
-      res.json(204)
+      res.send(204)
     })
     .catch(err => next(new restify.ConflictError(err.message)))
+})
+
+const cleanup = require('./cleanup').cleanup
+
+server.get('/api/cleanup', function (req, res, next) {
+  cleanup()
+
+  res.send('Cleanup started...')
 })
 
 require('./log-event-source')(server, db)

@@ -1,8 +1,9 @@
+const path = require('path')
 const uniqConfig = {
   client: 'sqlite3',
   useNullAsDefault: true,
   connection: {
-    filename: './xqedule.sqlite'
+    filename: path.join(__dirname, 'xqedule.sqlite')
   }
 }
 
