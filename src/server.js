@@ -50,6 +50,20 @@ server.get('/api/schedules', function (req, res, next) {
     .catch(err => next(new restify.InternalServerError(err.message)))
 })
 
+server.get('/api/schedule/:id/info', function (req, res, next) {
+  return db.first('schedule.*')
+    .from('schedule')
+    .where('schedule.id', req.params.id)
+    .then(schedule => {
+      if (!schedule) {
+        return next(new restify.NotFoundError('Schedule not found'))
+      }
+
+      res.json(schedule)
+    })
+    .catch(err => next(new restify.InternalServerError(err.message)))
+})
+
 server.get('/api/schedule/:id', function (req, res, next) {
   return db.first('schedule.*',
     'task.command AS task_command',
