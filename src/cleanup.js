@@ -5,7 +5,7 @@ const db = require('./db')
 const emitter = require('./emitter')
 const logger = require('./logger')
 const assign = require('lodash/assign')
-const sortBy = require('lodash/sortBy')
+const orderBy = require('lodash/orderBy')
 const scheduleTime = require('./components/schedule-time')
 const sum = require('lodash/sum')
 const prettyBytes = require('pretty-bytes')
@@ -106,7 +106,7 @@ function cleanScheduleProcs (schedule) {
     .from('process')
     .where('process.schedule', id)
     .then(procs => {
-      const stale = sortBy(procs, 'creation').slice(15)
+      const stale = orderBy(procs, ['creation'], ['desc']).slice(15)
 
       return removeManyProcs(stale)
     })
