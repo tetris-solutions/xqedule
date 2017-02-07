@@ -11,11 +11,15 @@ const loadOneSchedule = require('../actions/load-one-schedule')
 const forEach = require('lodash/forEach')
 
 function processRow ({id, pid, creation, end, log_file, memory_usage, cpu_usage, command}) {
+  const msDiff = end
+    ? moment(end).diff(moment(creation))
+    : null
+
   return yo`
     <tr>
       <td>${moment(creation).fromNow()}</td>
       <td><a href='/process/${id}'>${pid}</a></td>
-      <td>${end ? moment(end).fromNow() : '---'}</td>
+      <td>${end ? moment.duration(msDiff).humanize() : '---'}</td>
       <td>${command}</td>
       <td>${cpu_usage.length ? mean(cpu_usage).toFixed(2) + '%' : '--'}</td>
       <td>${memory_usage.length ? bytes(mean(memory_usage)) : '--'}</td>
@@ -30,7 +34,7 @@ function processTable (processes) {
         <tr>
           <th>Started</th>
           <th>PID</th>
-          <th>End</th>
+          <th>Duration</th>
           <th>Command</th>
           <th>CPU usage</th>
           <th>Memory footprint</th>
