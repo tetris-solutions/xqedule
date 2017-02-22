@@ -161,7 +161,7 @@ function getMatchingSchedules (schedules, timezone) {
     hour,
     minute
   }) => (
-    (day_of_week === null || now.day() + 1 === day_of_week) &&
+    (day_of_week === null || now.day() === day_of_week) &&
     (day_of_month === null || now.date() === day_of_month) &&
     (month === null || now.month() + 1 === month) &&
     (hour === null || now.hour() === hour) &&
