@@ -1,5 +1,6 @@
 const yo = require('yo-yo')
 const moment = require('moment')
+const isBoolean = require('lodash/isBoolean')
 const page = require('page')
 const deleteSchedule = require('../actions/delete-schedule')
 const mean = require('lodash/mean')
@@ -63,6 +64,10 @@ function viewSchedule (context) {
             <p>Loading...</p>        
         </main>
       </div>`
+  }
+
+  if (!isBoolean(state.disabled)) {
+    state.disabled = Boolean(schedule.disabled)
   }
 
   if (!state.mode) {

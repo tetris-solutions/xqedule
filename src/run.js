@@ -116,6 +116,11 @@ function monitor (childProcess, process) {
 }
 
 function run (schedule) {
+  if (schedule.disabled) {
+    logger.info(`schedule ${schedule.id} (${schedule.task.name}) is disabled`)
+    return
+  }
+
   if (running[schedule.id]) {
     logger.info(`schedule ${schedule.id} (${schedule.task.name}) is already running with pid ${running[schedule.id].childProcess.pid}`)
     return
