@@ -51,7 +51,7 @@ function dynamicTime (state, onChange) {
       <p>
         <label>${capitalize(name) + 's'}</label>
         <select name='${name}' onchange=${onChange}>
-            <option value=''>*</option>
+            <option value='' ${!state[name] && String(state[name]) !== '0' ? 'selected' : ''}>*</option>
             ${map(ls, val => yo`
                 <option ${state[name] !== null && Number(val) === Number(state[name]) ? 'selected' : ''} value='${val}'>
                   ${padStart(val, 2, '0')}
@@ -65,7 +65,7 @@ function dynamicTime (state, onChange) {
       <p>
           <label>Timezone</label>
           <select name='timezone' onchange=${onChange} required>
-              <option value=''>-- select --</option>
+              <option value='' ${!state.timezone ? 'selected' : ''}>-- select --</option>
               ${map(timezoneList, ({text, value}) => yo`
                   <option ${value === state.timezone ? 'selected' : ''} value='${value}'>
                     ${text}
@@ -75,7 +75,7 @@ function dynamicTime (state, onChange) {
       <p>
           <label>Day of month</label>
           <select name='day_of_month' onchange=${onChange}>
-              <option value=''>*</option>
+              <option value='' ${!state.day_of_month ? 'selected' : ''}>*</option>
               ${map(daysOfMonth, day => yo`
                   <option ${Number(day) === Number(state.day_of_month) ? 'selected' : ''} value='${day}'>
                     ${padStart(day, 2, '0')}
@@ -86,7 +86,7 @@ function dynamicTime (state, onChange) {
       <p>
           <label>Day of week</label>
           <select name='day_of_week' onchange=${onChange}>
-              <option value=''>*</option>
+              <option value='' ${!state.day_of_week ? 'selected' : ''}>*</option>
               ${map(daysOfWeek, day => yo`
                   <option ${state.day_of_week !== null && Number(day) === Number(state.day_of_week) ? 'selected' : ''} value='${day}'>
                     ${moment().day(day).format('dddd')}
@@ -97,7 +97,7 @@ function dynamicTime (state, onChange) {
       <p>
           <label>Month</label>
           <select name='month' onchange=${onChange}>
-              <option value=''>*</option>
+              <option value='' ${!state.month ? 'selected' : ''}>*</option>
               ${map(months, month => yo`
                   <option ${Number(month) === Number(state.month) ? 'selected' : ''} value='${month}'>
                     ${moment().month(month - 1).format('MMMM')}
@@ -247,7 +247,7 @@ function intervalInput (state, onChange) {
         required />
         
     <select name='interval.multiplier' onchange=${onChange} required>
-        <option value=''>-- select --</option>
+        <option value='' ${!state['interval.multiplier'] ? 'selected' : ''}>-- select --</option>
         ${map(intervalUnits, (value, name) => yo`
           <option value=${value} ${Number(state['interval.multiplier']) === Number(value) ? 'selected' : ''}>
             ${capitalize(name)}
