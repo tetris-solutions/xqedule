@@ -197,7 +197,10 @@ function onSubmitSchedule (e) {
     }
   })
 
-  newSchedule.disabled = form.elements.disabled.checked
+  newSchedule.disabled = form.elements.disabled
+    ? form.elements.disabled.checked
+    : false
+
   delete newSchedule['schedule-disabled']
 
   const promise = form.elements.id
@@ -293,11 +296,14 @@ function scheduleForm ({store, state, save}) {
   return yo`
     <form onsubmit=${onSubmitSchedule}>
       ${store.schedule ? yo`<input type=hidden name='id' value=${store.schedule.id} />` : ''}
+      
+      ${store.schedule ? yo`
       <fieldset>
         <legend>Status</legend>
         <input id='schedule-disabled' name='disabled' type="checkbox" ${state.disabled ? 'checked' : ''} onchange=${toggle}/>
         <label for='schedule-disabled'>Disable Schedule</label>
-      </fieldset>
+      </fieldset>` : ''}
+      
       <fieldset>
             <legend>Task configuration</legend>
             ${state.isLoading ? yo`<p>Loading task...</p>` : taskConfig()}

@@ -16,6 +16,7 @@ function taskDisplay (task, onClickDelete) {
         <td><a href='/schedule/${schedule.id}'>${scheduleTime(schedule)}</a></td>
         <td>${command(task, schedule)}</td>
         <td>${moment(schedule.creation).fromNow()}</td>
+        <td>${schedule.disabled ? yo`<strong style="color: red">OFF</strong>` : yo`<strong style="color: green">ON</strong>`}</td>
     </tr>`
   }
 
@@ -32,6 +33,7 @@ function taskDisplay (task, onClickDelete) {
                     <th>Schedule</th>
                     <th>Command</th>
                     <th>Creation</th>
+                    <th>Status</th>
                 </tr>
             </thead>
             <tbody>
