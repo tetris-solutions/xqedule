@@ -124,6 +124,7 @@ function searchSchedules () {
     'task.name AS task_name')
     .from('schedule')
     .join('task', 'task.id', 'schedule.task')
+    .where('schedule.disabled', 0)
     .then(hydrate)
     .then(mapFp(organize(newSchedules)))
     .then(schedules => {
@@ -154,13 +155,7 @@ function hasReachedTimestamp (schedule) {
 function getMatchingSchedules (schedules, timezone) {
   const now = moment.tz(timezone)
 
-  const matchesCurrentTime = ({
-    day_of_week,
-    day_of_month,
-    month,
-    hour,
-    minute
-  }) => (
+  const matchesCurrentTime = ({day_of_week, day_of_month, month, hour, minute}) => (
     (day_of_week === null || now.day() === day_of_week) &&
     (day_of_month === null || now.date() === day_of_month) &&
     (month === null || now.month() + 1 === month) &&
