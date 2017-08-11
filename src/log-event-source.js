@@ -1,10 +1,7 @@
 'use strict'
-const path = require('path')
 const fs = require('fs')
 const restify = require('restify')
 const Tail = require('tail').Tail
-
-const logDir = path.resolve(__dirname, '..', 'logs')
 
 const safeParseJSON = str => {
   if (!str) return null
@@ -65,10 +62,6 @@ function tailLogFile (req, res, next) {
     sendFreshProcess(process)
 
     try {
-      if (path.dirname(filePath) !== logDir) {
-        throw new Error('meh')
-      }
-
       fs.statSync(filePath)
     } catch (e) {
       return next(new restify.NotFoundError('Log file not found'))

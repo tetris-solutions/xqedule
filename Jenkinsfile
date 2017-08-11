@@ -23,7 +23,7 @@ pipeline {
     }
     stage('Build') {
       steps {
-        sh 'yarn'
+        sh 'npm install'
         sh 'npm run bundle'
       }
     }
@@ -35,8 +35,8 @@ pipeline {
     stage ('Archive') {
       steps {
         sh 'rm -rf node_modules'
-        sh 'yarn install --production'
-        sh "tar -zcf build.${env.BUILD_NUMBER}.tar.gz .env package.json knexfile.js timezones.json bin logs migrations lib public node_modules"
+        sh 'npm install --production'
+        sh "tar -zcf build.${env.BUILD_NUMBER}.tar.gz .env package.json npm-shrinkwrap.json knexfile.js timezones.json bin logs migrations lib public node_modules"
         archive "build.${env.BUILD_NUMBER}.tar.gz"
       }
     }
@@ -45,6 +45,9 @@ pipeline {
         sh "cp ${env.ssh_key} tetris.pem"
         sh "chmod 600 tetris.pem"
         sh "scp -i tetris.pem -o StrictHostKeyChecking=no build.${env.BUILD_NUMBER}.tar.gz ubuntu@${env.DEPLOY_TO}:."
+        sh "ssh -i tetris.pem -o StrictHostKeyChecking=no -t ubuntu@${env.DEPLOY_TO} 'sudo mkdir -p /var/log/xqedule'"
+        sh "ssh -i tetris.pem -o StrictHostKeyChecking=no -t ubuntu@${env.DEPLOY_TO} 'sudo chown ubuntu:ubuntu /var/log/xqedule'"
+        sh "ssh -i tetris.pem -o StrictHostKeyChecking=no -t ubuntu@${env.DEPLOY_TO} 'sudo chmod 774 /var/log/xqedule'"
         sh "ssh -i tetris.pem -o StrictHostKeyChecking=no -t ubuntu@${env.DEPLOY_TO} 'mkdir -p ${env.htdocs}/${env.BUILD_NUMBER}'"
         sh "ssh -i tetris.pem -o StrictHostKeyChecking=no -t ubuntu@${env.DEPLOY_TO} 'tar -zxf build.${env.BUILD_NUMBER}.tar.gz -C ${env.htdocs}/${env.BUILD_NUMBER}'"
         sh "ssh -i tetris.pem -o StrictHostKeyChecking=no -t ubuntu@${env.DEPLOY_TO} 'rm build.${env.BUILD_NUMBER}.tar.gz'"

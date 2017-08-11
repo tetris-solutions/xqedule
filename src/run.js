@@ -128,7 +128,7 @@ function run (schedule) {
       const parts = command.split(' ')
       const id = moment.utc().format('YYYYMMDDHHmmssSSSS')
       const logFileName = `${id}-${schedule.task.id}-${schedule.id}.log`
-      const logPath = path.resolve(rootPath, 'logs', logFileName)
+      const logPath = path.resolve('/var/log/xqedule', logFileName)
       const logWriteStream = fs.createWriteStream(logPath)
 
       /**  @type {ChildProcess} */
