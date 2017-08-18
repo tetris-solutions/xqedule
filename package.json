@@ -1,6 +1,6 @@
 {
   "name": "@tetris/xqedule",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "a task scheduler",
   "scripts": {
     "start": "bin/cmd.js",
