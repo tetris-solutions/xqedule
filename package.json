@@ -57,7 +57,7 @@
     "uglify-es": "^3.0.18",
     "winston": "^2.2.0",
     "xhr": "^2.2.0",
-    "yo-yo": "^1.2.1"
+    "yo-yo": "^1.4.1"
   },
   "devDependencies": {
     "browserify": "^13.0.1",

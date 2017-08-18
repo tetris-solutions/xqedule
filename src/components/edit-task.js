@@ -7,7 +7,7 @@ function injectState (context) {
   const {store, state} = context
 
   state.name = state.name || store.task.name
-  state.id = store.task.id
+  state.id = state.id || store.task.id
   state.command = state.command || store.task.command
 
   if (!state.params) {

@@ -225,7 +225,7 @@ server.put('/api/schedule/:id', function (req, res, next) {
 
 server.put('/api/task/:id', function (req, res, next) {
   const {id} = req.params
-  const immutableAttributes = ['id', 'creation']
+  const immutableAttributes = ['creation']
   const changes = omit(req.body, immutableAttributes)
 
   if (changes.params) {
@@ -235,6 +235,10 @@ server.put('/api/task/:id', function (req, res, next) {
   return db('task')
     .where('id', id)
     .update(changes)
+    .then(_ =>
+      changes.id && changes.id !== id
+        ? db('schedule').where('task', id).update({task: changes.id})
+        : _)
     .then(() => {
       emitter.emit('task::update', assign({id}, changes))
 

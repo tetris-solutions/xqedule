@@ -26,7 +26,7 @@ function taskForm ({state, save, params}) {
     e.preventDefault()
 
     const newTask = {
-      id: params.taskId || e.target.elements.id.value,
+      id: e.target.elements.id.value,
       name: e.target.elements.name.value,
       command: e.target.elements.command.value,
       params: {}
@@ -78,17 +78,17 @@ function taskForm ({state, save, params}) {
   return yo`
     <main>
       <form onsubmit=${onSubmit}>
-          ${isNewTask ? yo`<p>
+          <p>
               <label>Task id</label>
               <input name='id' value=${state.id} onchange=${onChange} required />
-          </p>` : ''}
+          </p>
           <p>
               <label>Task name</label>
-              <input name='name' value=${state.name || ''} onchange=${onChange} required />
+              <input name='name' value=${state.name} onchange=${onChange} required />
           </p>
           <p>
               <label>Command</label>
-              <input name='command' value=${state.command || ''} onchange=${onChange} required />
+              <input name='command' value=${state.command} onchange=${onChange} required />
           </p>
           
           ${map(state.params, paramInput)}
