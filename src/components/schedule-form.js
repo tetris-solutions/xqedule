@@ -139,9 +139,10 @@ function onSubmitSchedule (e) {
   const newSchedule = {}
 
   /* eslint-disable */
-  for (let name in form.elements) {
+  for (let item in form.elements) {
     /* eslint-enable */
-    const input = form.elements[name]
+    const input = form.elements[item]
+    const name = form.elements[item]['name']
 
     if (name >= 'a' && input instanceof window.HTMLElement && input.value !== '') {
       set(newSchedule, name, input.value)
