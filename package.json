@@ -42,7 +42,7 @@
   "dependencies": {
     "dotenv": "^2.0.0",
     "he": "^1.1.0",
-    "knex": "^0.16.5",
+    "knex": "^2.4.0",
     "lodash": "^4.13.1",
     "moment": "^2.13.0",
     "moment-timezone": "^0.5.4",
